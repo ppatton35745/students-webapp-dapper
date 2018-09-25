@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
@@ -13,34 +13,38 @@ using Workforce.Models;
 
 namespace Workforce.Models.ViewModels
 {
-    public class StudentEditViewModel
+    public class InstructorEditViewModel
     {
-        public Student Student { get; set; }
+        public Instructor Instructor { get; set; }
 
-        [Display(Name="Current Cohort")]
+        [Display(Name = "Current Cohort")]
         public List<SelectListItem> Cohorts { get; }
 
         private readonly IConfiguration _config;
 
-        public IDbConnection Connection {
-            get {
-                return new SqlConnection (_config.GetConnectionString ("DefaultConnection"));
+        public IDbConnection Connection
+        {
+            get
+            {
+                return new SqlConnection(_config.GetConnectionString("DefaultConnection"));
             }
         }
 
-        public StudentEditViewModel() {}
+        public InstructorEditViewModel() { }
 
-        public StudentEditViewModel(IConfiguration config)
+        public InstructorEditViewModel(IConfiguration config)
         {
             _config = config;
 
             string sql = $@"SELECT Id, Name FROM Cohort";
 
-            using (IDbConnection conn = Connection) {
-                List<Cohort> cohorts = (conn.Query<Cohort> (sql)).ToList();
+            using (IDbConnection conn = Connection)
+            {
+                List<Cohort> cohorts = (conn.Query<Cohort>(sql)).ToList();
 
                 this.Cohorts = cohorts
-                    .Select(li => new SelectListItem {
+                    .Select(li => new SelectListItem
+                    {
                         Text = li.Name,
                         Value = li.Id.ToString()
                     }).ToList();
@@ -48,7 +52,8 @@ namespace Workforce.Models.ViewModels
 
 
             // Add a prompt so that the <select> element isn't blank
-            this.Cohorts.Insert(0, new SelectListItem {
+            this.Cohorts.Insert(0, new SelectListItem
+            {
                 Text = "Choose cohort...",
                 Value = "0"
             });

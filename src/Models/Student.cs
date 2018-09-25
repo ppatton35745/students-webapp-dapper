@@ -32,6 +32,7 @@ namespace Workforce.Models
                 return $"{FirstName} {LastName}";
             }
         }
+
         public List<Exercise> AssignedExercises { get; set; } = new List<Exercise>();
     }
 
