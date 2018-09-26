@@ -26,6 +26,7 @@ namespace Workforce.Models
 
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Please Select a Cohort")]
+        [Display(Name = "Cohort")]
         public int CohortId { get; set; }
 
         public Cohort Cohort { get; set; }

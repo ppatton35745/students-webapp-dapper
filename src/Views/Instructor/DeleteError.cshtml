@@ -1,0 +1,14 @@
+﻿@model Workforce.Models.ViewModels.InstructorDeleteErrorViewModel;
+
+
+
+<h2>@Html.DisplayFor(model => model.Error.GetType())</h2>
+
+<div>
+    <p>
+        @Html.DisplayFor(model => model.Error.Message);
+    </p>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

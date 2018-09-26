@@ -115,13 +115,10 @@ namespace Workforce.Controllers
             }
         }
 
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            using (IDbConnection conn = Connection)
-            {
-                ViewData["CohortId"] = await CohortList(null);
-                return View();
-            }
+                InstructorCreateViewModel icm = new InstructorCreateViewModel(_config);
+                return View(icm);
         }
 
         // POST: Employee/Create
@@ -136,10 +133,9 @@ namespace Workforce.Controllers
             {
                 string sql = $@"
                     INSERT INTO Instructor
-                        ( Id, FirstName, LastName, SlackHandle, Specialty, CohortId )
+                        ( FirstName, LastName, SlackHandle, Specialty, CohortId )
                         VALUES
-                        ( null
-                            , '{Instructor.FirstName}'
+                        (  '{Instructor.FirstName}'
                             , '{Instructor.LastName}'
                             , '{Instructor.SlackHandle}'
                             , '{Instructor.Specialty}'
@@ -272,6 +268,16 @@ namespace Workforce.Controllers
             }
         }
 
+        public IActionResult DeleteError(SqlException e)
+        {
+            InstructorDeleteErrorViewModel myError = new InstructorDeleteErrorViewModel(e);
+            Console.WriteLine("Phil exception was passed is your error message:");
+            Console.WriteLine(e.GetType());
+            Console.WriteLine(e.Message);
+            Console.WriteLine("Phil End of your error message");
+            return View(myError);
+        }
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -281,12 +287,28 @@ namespace Workforce.Controllers
 
             using (IDbConnection conn = Connection)
             {
-                int rowsAffected = await conn.ExecuteAsync(sql);
-                if (rowsAffected > 0)
+     
+                try
                 {
-                    return RedirectToAction(nameof(Index));
+                    int rowsAffected = await conn.ExecuteAsync(sql);
+
+                    if (rowsAffected > 0)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                    throw new Exception("No rows affected");
                 }
-                throw new Exception("No rows affected");
+
+                catch (SqlException e)
+                {
+                    Console.WriteLine("Phil this is your error message:");
+                    Console.WriteLine(e.GetType());
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine("Phil End of your error message");
+                    ControllerContext.RouteData.Values.Add("e", e);
+                    return RedirectToAction(nameof(DeleteError));
+                }
+        
             }
         }
 
